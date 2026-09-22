@@ -102,7 +102,7 @@ CREATE TRIGGER on_auth_user_created
 
 CREATE TABLE companies (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id     uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id     uuid NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   name        text NOT NULL,
   website     text,
   industry    text,
@@ -137,7 +137,7 @@ CREATE POLICY "Users can delete own companies"
 
 CREATE TABLE opportunities (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id         uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id         uuid NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   company_id      uuid REFERENCES companies(id) ON DELETE SET NULL,
   title           text NOT NULL,
   status          opportunity_status NOT NULL DEFAULT 'discovered',
@@ -183,7 +183,7 @@ CREATE POLICY "Users can delete own opportunities"
 
 CREATE TABLE contacts (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id       uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id       uuid NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   company_id    uuid REFERENCES companies(id) ON DELETE SET NULL,
   name          text NOT NULL,
   role          text,
@@ -221,7 +221,7 @@ CREATE POLICY "Users can delete own contacts"
 
 CREATE TABLE interactions (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id         uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id         uuid NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   opportunity_id  uuid NOT NULL REFERENCES opportunities(id) ON DELETE CASCADE,
   contact_id      uuid REFERENCES contacts(id) ON DELETE SET NULL,
   platform        interaction_platform NOT NULL DEFAULT 'linkedin',
@@ -284,3 +284,17 @@ CREATE TRIGGER set_contacts_updated_at
 CREATE TRIGGER set_interactions_updated_at
   BEFORE UPDATE ON interactions
   FOR EACH ROW EXECUTE PROCEDURE public.set_updated_at();
+
+-- ============================================================
+-- PRIVILEGES & GRANTS
+-- ============================================================
+
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO authenticated;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO authenticated;
+

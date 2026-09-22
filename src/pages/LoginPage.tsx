@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { BriefcaseBusiness, Mail, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -8,10 +10,15 @@ import { Label } from '@/components/ui/label'
 type Step = 'email' | 'sent'
 
 export default function LoginPage() {
+  const { session } = useAuth()
   const [email, setEmail] = useState('')
   const [step, setStep] = useState<Step>('email')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  if (session) {
+    return <Navigate to="/" replace />
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -24,6 +31,7 @@ export default function LoginPage() {
       email: email.trim(),
       options: {
         shouldCreateUser: true,
+        emailRedirectTo: window.location.origin,
       },
     })
 

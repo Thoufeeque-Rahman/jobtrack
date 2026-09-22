@@ -129,3 +129,4 @@ export function TimelineView({ interactions, loading, error, onEdit, onDelete }:
     </div>
   )
 }
+

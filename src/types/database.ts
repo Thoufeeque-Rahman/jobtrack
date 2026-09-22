@@ -109,3 +109,4 @@ export type CompanyInput = Omit<Company, 'id' | 'user_id' | 'created_at' | 'upda
 export type OpportunityInput = Omit<Opportunity, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'company'>
 export type ContactInput = Omit<Contact, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'company'>
 export type InteractionInput = Omit<Interaction, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'contact'>
+

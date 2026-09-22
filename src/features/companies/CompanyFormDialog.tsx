@@ -141,3 +141,4 @@ export function CompanyFormDialog({ open, onOpenChange, company, onSubmit }: Com
     </Dialog>
   )
 }
+

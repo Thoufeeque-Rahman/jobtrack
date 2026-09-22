@@ -69,3 +69,4 @@ export function useContacts() {
 
   return { contacts, loading, error, refetch: fetch, createContact, updateContact, deleteContact }
 }
+

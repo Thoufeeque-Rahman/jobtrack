@@ -77,3 +77,4 @@ export const INTERACTION_TYPE_LABELS: Record<InteractionType, string> = {
   rejection: 'Rejection',
   other: 'Other',
 }
+

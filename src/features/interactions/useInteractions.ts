@@ -73,3 +73,4 @@ export function useInteractions(opportunityId: string) {
 
   return { interactions, loading, error, refetch: fetch, createInteraction, updateInteraction, deleteInteraction }
 }
+

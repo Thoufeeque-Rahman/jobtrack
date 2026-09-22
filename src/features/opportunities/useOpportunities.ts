@@ -112,3 +112,4 @@ export function useOpportunity(id: string) {
 
   return { opportunity, loading, error, refetch: fetch, update }
 }
+

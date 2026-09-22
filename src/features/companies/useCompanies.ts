@@ -77,3 +77,4 @@ export function useCompanies() {
 
   return { companies, loading, error, refetch: fetch, createCompany, updateCompany, deleteCompany }
 }
+

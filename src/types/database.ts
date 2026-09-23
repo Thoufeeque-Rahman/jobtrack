@@ -110,3 +110,68 @@ export type OpportunityInput = Omit<Opportunity, 'id' | 'user_id' | 'created_at'
 export type ContactInput = Omit<Contact, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'company'>
 export type InteractionInput = Omit<Interaction, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'contact'>
 
+// ─── Content Studio ────────────────────────────────────────────────────────
+
+export type ContentType = 'video' | 'text' | 'carousel' | 'image'
+export type ContentPlatform = 'linkedin' | 'instagram' | 'youtube' | 'facebook' | 'other'
+export type ContentStatus =
+  | 'idea'
+  | 'script'
+  | 'recording'
+  | 'editing'
+  | 'ready'
+  | 'scheduled'
+  | 'published'
+  | 'archived'
+
+export interface ContentPost {
+  id: string
+  user_id: string
+
+  // Core
+  title: string
+  description: string | null
+  content_type: ContentType
+  platform: ContentPlatform
+  status: ContentStatus
+
+  // Creative content
+  idea: string | null
+  hook: string | null
+  script: string | null
+  caption: string | null
+  call_to_action: string | null
+  notes: string | null
+
+  // Production checklist — explicit boolean columns
+  checklist_idea_finalized: boolean
+  checklist_hook_finalized: boolean
+  checklist_script_completed: boolean
+  checklist_video_recorded: boolean
+  checklist_video_edited: boolean
+  checklist_thumbnail_ready: boolean
+  checklist_caption_ready: boolean
+  checklist_cta_ready: boolean
+  checklist_published: boolean
+
+  // Production assets
+  recording_url: string | null
+  thumbnail_url: string | null
+
+  // Publishing
+  published_url: string | null
+  scheduled_at: string | null
+  published_at: string | null
+
+  // Manual performance metrics
+  views: number
+  likes: number
+  comments: number
+  shares: number
+
+  // Timestamps
+  created_at: string
+  updated_at: string
+}
+
+export type ContentPostInput = Omit<ContentPost, 'id' | 'user_id' | 'created_at' | 'updated_at'>

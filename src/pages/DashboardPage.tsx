@@ -1,13 +1,15 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Briefcase, Building2, Users, CalendarClock, ChevronRight, ArrowRight } from 'lucide-react'
+import { Briefcase, Building2, Users, CalendarClock, ChevronRight, ArrowRight, Clapperboard } from 'lucide-react'
 import { format, isToday, isPast, parseISO, formatDistanceToNow } from 'date-fns'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useOpportunities } from '@/features/opportunities/useOpportunities'
 import { useCompanies } from '@/features/companies/useCompanies'
 import { useContacts } from '@/features/contacts/useContacts'
+import { useContent } from '@/features/content/useContent'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { STATUS_LABELS, STATUS_VARIANTS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { Opportunity } from '@/types/database'
@@ -85,6 +87,7 @@ export default function DashboardPage() {
   const { opportunities, loading: oppLoading } = useOpportunities()
   const { companies, loading: compLoading } = useCompanies()
   const { contacts, loading: contactLoading } = useContacts()
+  const { contentPosts, loading: contentLoading } = useContent()
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours()
@@ -118,7 +121,22 @@ export default function DashboardPage() {
     [opportunities]
   )
 
-  const loading = oppLoading || compLoading || contactLoading
+  const loading = oppLoading || compLoading || contactLoading || contentLoading
+
+  const contentStats = useMemo(() => {
+    const ideas = contentPosts.filter((p) => p.status === 'idea').length
+    const inProgress = contentPosts.filter((p) =>
+      ['script', 'recording', 'editing'].includes(p.status)
+    ).length
+    const ready = contentPosts.filter((p) => p.status === 'ready').length
+    const now = new Date()
+    const publishedThisMonth = contentPosts.filter((p) => {
+      if (p.status !== 'published' || !p.published_at) return false
+      const d = new Date(p.published_at)
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+    }).length
+    return { ideas, inProgress, ready, publishedThisMonth }
+  }, [contentPosts])
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-7">
@@ -237,6 +255,36 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Content Studio summary */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary shrink-0">
+                <Clapperboard className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <p className="font-medium text-sm">Content Studio</p>
+                {loading ? (
+                  <div className="h-4 w-48 bg-muted rounded animate-pulse mt-1" />
+                ) : (
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {contentStats.ideas} {contentStats.ideas === 1 ? 'idea' : 'ideas'}
+                    {contentStats.inProgress > 0 && ` · ${contentStats.inProgress} in production`}
+                    {contentStats.ready > 0 && ` · ${contentStats.ready} ready`}
+                    {contentStats.publishedThisMonth > 0 && ` · ${contentStats.publishedThisMonth} published this month`}
+                    {contentPosts.length === 0 && 'No content yet — start creating'}
+                  </p>
+                )}
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild className="shrink-0">
+              <Link to="/content">Open Studio →</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

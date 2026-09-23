@@ -6,6 +6,9 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { isMissingConfig } from '@/lib/supabase'
 import LoginPage from '@/pages/LoginPage'
+import SignUpPage from '@/pages/SignUpPage'
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage'
+import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import DashboardPage from '@/pages/DashboardPage'
 import OpportunitiesPage from '@/pages/OpportunitiesPage'
 import OpportunityDetailPage from '@/pages/OpportunityDetailPage'
@@ -13,6 +16,9 @@ import CompaniesPage from '@/pages/CompaniesPage'
 import ContactsPage from '@/pages/ContactsPage'
 import FollowUpsPage from '@/pages/FollowUpsPage'
 import SettingsPage from '@/pages/SettingsPage'
+import ContentDashboardPage from '@/pages/ContentDashboardPage'
+import ContentPipelinePage from '@/pages/ContentPipelinePage'
+import ContentDetailPage from '@/pages/ContentDetailPage'
 
 function MissingConfig() {
   return (
@@ -50,7 +56,13 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+            {/* Protected routes */}
             <Route
               element={
                 <ProtectedRoute>
@@ -58,6 +70,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             >
+              {/* Job Search */}
               <Route index element={<DashboardPage />} />
               <Route path="opportunities" element={<OpportunitiesPage />} />
               <Route path="opportunities/:id" element={<OpportunityDetailPage />} />
@@ -65,7 +78,14 @@ export default function App() {
               <Route path="contacts" element={<ContactsPage />} />
               <Route path="followups" element={<FollowUpsPage />} />
               <Route path="settings" element={<SettingsPage />} />
+
+              {/* Content Studio */}
+              <Route path="content" element={<ContentDashboardPage />} />
+              <Route path="content/pipeline" element={<ContentPipelinePage />} />
+              <Route path="content/:id" element={<ContentDetailPage />} />
             </Route>
+
+            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

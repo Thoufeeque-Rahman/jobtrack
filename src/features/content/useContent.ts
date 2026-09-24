@@ -56,9 +56,15 @@ export function useContent() {
   useEffect(() => { void fetchContent() }, [fetchContent])
 
   const createPost = async (input: ContentPostInput): Promise<ContentPost | null> => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    const payload = user ? { ...input, user_id: user.id } : input
+
     const { data, error } = await supabase
       .from('content_posts')
-      .insert(input)
+      .insert(payload)
       .select(CONTENT_SELECT)
       .single()
     if (error) { toast.error('Failed to create content post.'); console.error(error); return null }

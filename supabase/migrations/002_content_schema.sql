@@ -22,7 +22,7 @@ CREATE TYPE content_status AS ENUM (
 
 CREATE TABLE content_posts (
   id              uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id         uuid        NOT NULL REFERENCES auth.users ON DELETE CASCADE,
+  user_id         uuid        NOT NULL DEFAULT auth.uid() REFERENCES auth.users ON DELETE CASCADE,
 
   -- Core fields
   title           text        NOT NULL,
@@ -89,10 +89,20 @@ CREATE TRIGGER set_content_posts_updated_at
 
 ALTER TABLE content_posts ENABLE ROW LEVEL SECURITY;
 
--- Users can only access their own content posts
-CREATE POLICY "content_posts: users own their rows"
-  ON content_posts
-  FOR ALL
-  USING  (auth.uid() = user_id)
+CREATE POLICY "Users can view own content_posts"
+  ON content_posts FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own content_posts"
+  ON content_posts FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own content_posts"
+  ON content_posts FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own content_posts"
+  ON content_posts FOR DELETE
+  USING (auth.uid() = user_id);
+
 
